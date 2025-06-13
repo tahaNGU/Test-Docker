@@ -1,0 +1,43 @@
+services:
+    # nginx
+    web:
+        image: nginx:latest
+        ports:
+            - "80:80"
+        volumes:
+            - ./nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf
+    # php
+    app:
+        build:
+            dockerfile: ./Dockerfile
+        volumes:
+            - ./app:/app
+    # mysql
+    db:
+        image: mysql:8.0
+        volumes:
+            - /home/database/lara:/var/lib/mysql
+        ports:
+            - "3306:3306"
+        restart: unless-stopped
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_USER: user
+            MYSQL_PASSWORD: root
+            MYSQL_DATABASE: admoon
+    # phpmyadmin
+    phpmyadmin:
+        image: phpmyadmin:latest
+        environment:
+#            PMA_HOST: db
+#            MYSQL_ROOT_PASSWORD: root
+            PMA_HOST: db
+            PMA_USER: root
+            PMA_PASSWORD: root
+        ports:
+            - 8080:80
+        depends_on:
+            - db
+    # redis
+volumes:
+    mysqldata:
